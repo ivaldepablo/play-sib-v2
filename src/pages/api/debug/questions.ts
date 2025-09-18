@@ -23,7 +23,7 @@ export default async function handler(
 
     const byCategory = questions.reduce((acc, q) => {
       if (!acc[q.category]) acc[q.category] = 0;
-      acc[q.category]++;
+      acc[q.category] = (acc[q.category] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 
