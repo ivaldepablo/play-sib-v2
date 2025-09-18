@@ -7,7 +7,7 @@ export const env = createEnv({
    * isn't built with invalid env vars.
    */
   server: {
-    DATABASE_URL: z.string().default("file:./dev.db"),
+    DATABASE_URL: z.string().default(process.env.NODE_ENV === 'production' ? "file:/tmp/dev.db" : "file:./dev.db"),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
