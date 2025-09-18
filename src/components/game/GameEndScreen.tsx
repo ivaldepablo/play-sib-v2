@@ -165,7 +165,7 @@ export const GameEndScreen: React.FC<GameEndScreenProps> = ({
             </div>
             <div className="bg-white/10 backdrop-blur-sm p-4 rounded-2xl">
               <div className="text-2xl mb-2">⏱️</div>
-              <div className="text-2xl font-bold text-white">5:00</div>
+              <div className="text-2xl font-bold text-white">1:00</div>
               <div className="text-white/70 text-sm">игрового времени</div>
             </div>
           </div>

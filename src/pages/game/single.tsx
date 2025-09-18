@@ -35,7 +35,7 @@ const SinglePlayerGame: NextPage = () => {
   // Game state
   const [gameState, setGameState] = useState<'wheel' | 'question' | 'ended'>('wheel');
   const [score, setScore] = useState(0);
-  const [gameTime, setGameTime] = useState(300); // 5 minutes
+  const [gameTime, setGameTime] = useState(60); // 1 minute
   const [questionTime, setQuestionTime] = useState(20);
   const [currentQuestion, setCurrentQuestion] = useState<GameQuestion | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
@@ -48,7 +48,15 @@ const SinglePlayerGame: NextPage = () => {
     { enabled: !!selectedCategory }
   );
 
-  const submitScoreMutation = api.score.submit.useMutation();
+  const utils = api.useUtils();
+  const submitScoreMutation = api.score.submit.useMutation({
+    onSuccess: () => {
+      // Invalidate leaderboard queries to refetch fresh data
+      utils.leaderboard.getGlobal.invalidate();
+      utils.leaderboard.getWeekly.invalidate();
+      utils.leaderboard.getUserRank.invalidate();
+    },
+  });
 
   // Check user session
   useEffect(() => {
@@ -171,7 +179,7 @@ const SinglePlayerGame: NextPage = () => {
 
   const restartGame = useCallback(() => {
     setScore(0);
-    setGameTime(300);
+    setGameTime(60);
     setQuestionTime(20);
     setCurrentQuestion(null);
     setSelectedCategory('');
@@ -300,10 +308,10 @@ const SinglePlayerGame: NextPage = () => {
               <div className="text-center">
                 <div className="text-6xl mb-4">⚠️</div>
                 <h3 className="text-2xl font-bold text-white mb-4">
-                  ¿Salir del juego?
+                  Выйти из игры?
                 </h3>
                 <p className="text-white/80 mb-6">
-                  Si sales ahora perderás tu progreso actual. Tu puntuación es <span className="font-bold text-accent-yellow">{score} puntos</span>.
+                  Если вы выйдете сейчас, то потеряете текущий прогресс. Ваш счет: <span className="font-bold text-accent-yellow">{score} очков</span>.
                 </p>
                 
                 <div className="flex space-x-4">
@@ -315,7 +323,7 @@ const SinglePlayerGame: NextPage = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    Continuar Jugando
+                    Продолжить игру
                   </motion.button>
                   
                   <motion.button
@@ -323,10 +331,10 @@ const SinglePlayerGame: NextPage = () => {
                     className="flex-1 px-6 py-3 bg-red-500/20 hover:bg-red-500/30 
                               border border-red-500/50 rounded-xl text-white font-bold
                               transition-all duration-200"
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    Salir al Menú
+                    Выйти в меню
                   </motion.button>
                 </div>
               </div>

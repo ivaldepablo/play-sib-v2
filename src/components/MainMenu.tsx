@@ -143,7 +143,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({ userSession, onLogout }) => 
         >
           {[
             { icon: "🎯", label: "5 категорий", value: "История Томска" },
-            { icon: "⏰", label: "5 минут", value: "Время игры" },
+            { icon: "⏰", label: "1 минута", value: "Время игры" },
             { icon: "❓", label: "20 секунд", value: "На вопрос" },
             { icon: "🏆", label: "10 очков", value: "За ответ" },
           ].map((stat, index) => (

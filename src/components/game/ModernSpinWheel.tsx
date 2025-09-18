@@ -242,7 +242,7 @@ const ModernSpinWheel = forwardRef<any, ModernSpinWheelProps>(({ categories, onR
               <div className="animate-spin w-6 h-6 border-2 border-white border-t-transparent rounded-full"></div>
             </div>
           ) : (
-            'SPIN'
+            'КРУТИТЬ'
           )}
         </button>
       </div>
