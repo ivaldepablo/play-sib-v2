@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import SpinningWheelPremium from './SpinningWheelPremium';
+import ModernSpinWheel from './ModernSpinWheel';
 import { playSound } from '~/utils/sounds';
 
 interface SpinWheelProps {
@@ -67,7 +67,7 @@ export const SpinWheel: React.FC<SpinWheelProps> = ({
         transition={{ delay: 0.4, duration: 0.6 }}
         className="relative"
       >
-        <SpinningWheelPremium
+        <ModernSpinWheel
           categories={categories}
           onResult={onCategorySelected}
           isSpinning={isSpinning}

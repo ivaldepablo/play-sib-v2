@@ -94,13 +94,9 @@ const SinglePlayerGame: NextPage = () => {
   }, [gameState, currentQuestion]);
 
   const handleCategorySelected = useCallback((category: string) => {
-    setIsSpinning(true);
+    console.log('Category selected:', category); // Debug log
     setSelectedCategory(category);
-    
-    // Simulate wheel spin time
-    setTimeout(() => {
-      setIsSpinning(false);
-    }, 2000);
+    setIsSpinning(false); // Stop spinning immediately when category is selected
   }, []);
 
   // Get random question when category is selected and questions are loaded
