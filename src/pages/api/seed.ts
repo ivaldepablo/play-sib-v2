@@ -140,12 +140,14 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ message: "Method not allowed" });
+  if (req.method !== "POST" && req.method !== "GET") {
+    return res.status(405).json({ message: "Method not allowed. Use GET or POST." });
   }
 
   try {
     console.log("🌱 Starting database seeding...");
+    console.log(`📥 Request method: ${req.method}`);
+    console.log(`🔗 Request URL: ${req.url}`);
 
     // Clear existing questions
     await db.question.deleteMany();
