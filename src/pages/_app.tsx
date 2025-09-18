@@ -15,8 +15,8 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <>
       <Head>
-        <title>Play Sib v2 - Сибирская викторина</title>
-        <meta name="description" content="Play Sib - Современная игра-викторина о торговой истории Томска и Сибири" />
+        <title>ПлайСиб - Сибирская викторина</title>
+        <meta name="description" content="ПлайСиб - Современная игра-викторина о торговой истории Томска и Сибири" />
         <link rel="icon" href="/favicon.ico" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         
