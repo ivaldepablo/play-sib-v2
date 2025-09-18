@@ -96,25 +96,49 @@ const SpinningWheelPremium = forwardRef<any, SpinningWheelPremiumProps>(({ categ
     };
   };
 
-  // Break long text into multiple lines for better readability
+  // Simplified category names with icons
   const formatCategoryText = (text: string) => {
-    if (text.length <= 18) return [text];
+    const categoryMap: Record<string, { short: string; icon: string }> = {
+      "Жизнь социальных классов": { short: "Социальные классы", icon: "👥" },
+      "Домашнее хозяйство": { short: "Домашнее хозяйство", icon: "🏠" },
+      "Знаменитые купеческие династии": { short: "Купеческие династии", icon: "👑" },
+      "Томск - крупный сибирский торговый центр": { short: "Торговый центр", icon: "🏛️" },
+      "Развитие предпринимательства": { short: "Предпринимательство", icon: "💼" }
+    };
     
-    const words = text.split(' ');
-    const lines = [];
-    let currentLine = '';
-    
-    for (const word of words) {
-      if ((currentLine + ' ' + word).length <= 18) {
-        currentLine += (currentLine ? ' ' : '') + word;
+    const mapped = categoryMap[text];
+    if (mapped) {
+      // Split into max 2 lines if still too long
+      const shortText = mapped.short;
+      if (shortText.length <= 16) {
+        return [shortText];
       } else {
-        if (currentLine) lines.push(currentLine);
-        currentLine = word;
+        const words = shortText.split(' ');
+        if (words.length >= 2) {
+          const mid = Math.ceil(words.length / 2);
+          return [
+            words.slice(0, mid).join(' '),
+            words.slice(mid).join(' ')
+          ];
+        }
+        return [shortText];
       }
     }
-    if (currentLine) lines.push(currentLine);
     
-    return lines.slice(0, 2); // Max 2 lines
+    // Fallback for unknown categories
+    return text.length <= 16 ? [text] : [text.substring(0, 16) + "..."];
+  };
+
+  // Get icon for category
+  const getCategoryIcon = (text: string) => {
+    const categoryMap: Record<string, string> = {
+      "Жизнь социальных классов": "👥",
+      "Домашнее хозяйство": "🏠", 
+      "Знаменитые купеческие династии": "👑",
+      "Томск - крупный сибирский торговый центр": "🏛️",
+      "Развитие предпринимательства": "💼"
+    };
+    return categoryMap[text] || "📚";
   };
 
   return (
@@ -262,14 +286,40 @@ const SpinningWheelPremium = forwardRef<any, SpinningWheelPremiumProps>(({ categ
                   opacity="0.6"
                 />
                 
-                {/* Category text with premium styling */}
+                {/* Category content - ALWAYS HORIZONTAL */}
                 <g>
+                  {/* Background circle for better readability */}
+                  <circle
+                    cx={textPos.x}
+                    cy={textPos.y}
+                    r="40"
+                    fill="rgba(0,0,0,0.4)"
+                    stroke="rgba(255,255,255,0.3)"
+                    strokeWidth="2"
+                  />
+                  
+                  {/* Category Icon */}
+                  <text
+                    x={textPos.x}
+                    y={textPos.y - 15}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className="select-none"
+                    style={{
+                      fontSize: '20px',
+                      filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.8))'
+                    }}
+                  >
+                    {getCategoryIcon(category)}
+                  </text>
+                  
+                  {/* Category Text */}
                   {lines.map((line, lineIndex) => {
-                    const yOffset = (lineIndex - (lines.length - 1) / 2) * 15;
+                    const yOffset = (lineIndex - (lines.length - 1) / 2) * 14 + 8; // Offset down for icon
                     
                     return (
                       <g key={`text-${index}-${lineIndex}`}>
-                        {/* Text shadow */}
+                        {/* Text shadow for depth */}
                         <text
                           x={textPos.x + 1}
                           y={textPos.y + yOffset + 1}
@@ -277,15 +327,15 @@ const SpinningWheelPremium = forwardRef<any, SpinningWheelPremiumProps>(({ categ
                           dominantBaseline="middle"
                           className="font-bold select-none"
                           style={{
-                            fontSize: '14px',
-                            fill: 'rgba(0,0,0,0.5)',
+                            fontSize: '11px',
+                            fill: 'rgba(0,0,0,0.8)',
                             fontFamily: '"Comfortaa", "Arial", sans-serif'
                           }}
                         >
                           {line}
                         </text>
                         
-                        {/* Main text */}
+                        {/* Main text - ALWAYS HORIZONTAL */}
                         <text
                           x={textPos.x}
                           y={textPos.y + yOffset}
@@ -293,10 +343,10 @@ const SpinningWheelPremium = forwardRef<any, SpinningWheelPremiumProps>(({ categ
                           dominantBaseline="middle"
                           className="font-bold select-none"
                           style={{
-                            fontSize: '14px',
+                            fontSize: '11px',
                             fill: '#FFFFFF',
-                            stroke: '#2C3E50',
-                            strokeWidth: '0.5px',
+                            stroke: '#1A252F',
+                            strokeWidth: '0.8px',
                             fontFamily: '"Comfortaa", "Arial", sans-serif',
                             fontWeight: 'bold'
                           }}
