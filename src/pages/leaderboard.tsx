@@ -88,7 +88,7 @@ const LeaderboardPage: NextPage = () => {
             🏆 Таблица лидеров
           </h1>
           <p className="text-white/80 text-lg mb-4">
-            Лучшие игроки Play Sib v2
+            Лучшие игроки ПлейСиб
           </p>
           <motion.button
             onClick={handleRefresh}

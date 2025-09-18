@@ -57,7 +57,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({ userSession, onLogout }) => 
           className="text-center mb-12"
         >
           <h1 className="text-5xl font-bold font-comfortaa text-white mb-4">
-            🎯 Play Sib v2
+            🎯 ПлейСиб
           </h1>
           <p className="text-white/80 text-xl">
             Сибирская викторина

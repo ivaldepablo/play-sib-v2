@@ -45,11 +45,11 @@ export const GameEndScreen: React.FC<GameEndScreenProps> = ({
   const scoreMessage = getScoreMessage();
 
   const handleShare = () => {
-    const text = `Я набрал ${score} очков в игре Play Sib v2! Попробуй и ты проверить свои знания о сибирской истории!`;
+    const text = `Я набрал ${score} очков в игре ПлейСиб! Попробуй и ты проверить свои знания о сибирской истории!`;
     
     if (navigator.share) {
       navigator.share({
-        title: 'Play Sib v2 - Сибирская викторина',
+        title: 'ПлейСиб - Сибирская викторина',
         text: text,
         url: window.location.origin,
       }).catch(console.error);
@@ -215,7 +215,7 @@ export const GameEndScreen: React.FC<GameEndScreenProps> = ({
           transition={{ delay: 1.2 }}
           className="relative z-10 mt-8 pt-6 border-t border-white/20 text-white/60 text-sm"
         >
-          <p className="font-bold text-primary-200 mb-2">Play Sib v2</p>
+          <p className="font-bold text-primary-200 mb-2">ПлейСиб</p>
           <p>Викторина о торговой истории Томска</p>
           <p>Узнайте больше о купеческих династиях и развитии Сибири!</p>
         </motion.div>

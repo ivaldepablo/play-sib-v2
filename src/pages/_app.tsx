@@ -27,19 +27,19 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         />
         
         {/* PWA Meta Tags */}
-        <meta name="application-name" content="Play Sib v2" />
+        <meta name="application-name" content="ПлейСиб" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="Play Sib v2" />
+        <meta name="apple-mobile-web-app-title" content="ПлейСиб" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#2dd4bf" />
         
         {/* Open Graph */}
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="Play Sib v2 - Сибирская викторина" />
+        <meta property="og:title" content="ПлейСиб - Сибирская викторина" />
         <meta property="og:description" content="Проверьте свои знания о торговой истории Томска! Играйте в одиночку или дуэлью с друзьями." />
-        <meta property="og:site_name" content="Play Sib v2" />
+        <meta property="og:site_name" content="ПлейСиб" />
       </Head>
       
       <main className={`font-sans ${inter.variable} min-h-screen bg-gradient-to-br from-primary-400 via-secondary-500 to-purple-600`}>

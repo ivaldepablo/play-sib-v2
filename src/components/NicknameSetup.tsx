@@ -54,7 +54,7 @@ export const NicknameSetup: React.FC<NicknameSetupProps> = ({ onUserCreated }) =
             className="mb-8"
           >
             <h1 className="text-4xl font-bold font-comfortaa text-white mb-2">
-              🎯 Play Sib v2
+              🎯 ПлейСиб
             </h1>
             <p className="text-white/80 text-lg">
               Сибирская викторина
