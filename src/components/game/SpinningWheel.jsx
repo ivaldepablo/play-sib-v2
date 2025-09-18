@@ -148,136 +148,120 @@ const SpinningWheel = ({ onSpinComplete, disabled = false }) => {
       await controls.start({
         rotate: totalRotation,
         transition: {
-          duration: 0.25,
-          ease: "easeInOut"
+      
+      await controls.start({
+        rotate: newRotation,
+        transition: {
+          duration: 4.5,
+          ease: [0.23, 1, 0.32, 1], // Smooth realistic deceleration
         }
       });
       
-      // Determinar y notificar el segmento ganador
-      const winningSegment = calculateWinningSegment(totalRotation);
+      // Calculate which segment was selected (accounting for pointer at top)
+      const normalizedAngle = (360 - (newRotation % 360) + 90) % 360;
+      const selectedIndex = Math.floor(normalizedAngle / segmentAngle);
+      const selectedCategory = categories[selectedIndex];
       
-      // Pequeña pausa antes de notificar para darle drama
-      setTimeout(() => {
-        setIsSpinning(false);
-        onSpinComplete?.(winningSegment);
-      }, 300);
-      
-    } catch (error) {
-      console.error('Error durante la animación:', error);
       setIsSpinning(false);
+      
+      if (onResult) {
+        onResult(selectedCategory);
+      }
+      
+      return selectedCategory;
     }
-  }, [controls, isSpinning, disabled, onSpinComplete]);
+  }));
+
+  const createSegmentPath = (index, total) => {
+    const angle = 360 / total;
+    const startAngle = index * angle - 90; // Start from top
+    const endAngle = (index + 1) * angle - 90;
+    
+    const startAngleRad = (startAngle * Math.PI) / 180;
+    const endAngleRad = (endAngle * Math.PI) / 180;
+    
+    const radius = 140;
+    const centerX = 150;
+    const centerY = 150;
+    
+    const x1 = centerX + radius * Math.cos(startAngleRad);
+    const y1 = centerY + radius * Math.sin(startAngleRad);
+    const x2 = centerX + radius * Math.cos(endAngleRad);
+    const y2 = centerY + radius * Math.sin(endAngleRad);
+    
+    const largeArcFlag = angle > 180 ? 1 : 0;
+    
+    return `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
+  };
+
+  const getTextPosition = (index, total) => {
+    const angle = 360 / total;
+    const midAngle = (index * angle + angle / 2 - 90) * (Math.PI / 180);
+    const textRadius = 100; // Increased for better readability
+    const centerX = 150;
+    const centerY = 150;
+    
+    return {
+      x: centerX + textRadius * Math.cos(midAngle),
+      y: centerY + textRadius * Math.sin(midAngle),
+      angle: (index * angle + angle / 2 - 90)
+    };
+  };
+
+  // Break long text into multiple lines
+  const formatCategoryText = (text) => {
+    if (text.length <= 20) return [text];
+    
+    const words = text.split(' ');
+    const lines = [];
+    let currentLine = '';
+    
+    for (const word of words) {
+      if ((currentLine + ' ' + word).length <= 20) {
+        currentLine += (currentLine ? ' ' : '') + word;
+      } else {
+        if (currentLine) lines.push(currentLine);
+        currentLine = word;
+      }
+    }
+    if (currentLine) lines.push(currentLine);
+    
+    return lines.slice(0, 2); // Max 2 lines
+  };
 
   return (
-    <div className="flex items-center justify-center p-8">
+    <div className="flex flex-col items-center space-y-8">
+      {/* Wheel Container with glow effect */}
       <div className="relative">
-        {/* Contenedor principal de la rueda */}
-        <div className="relative">
-          {/* SVG de la rueda */}
-          <motion.svg
-            width="300"
-            height="300"
-            viewBox="0 0 300 300"
-            className="drop-shadow-2xl"
-            animate={controls}
-            initial={{ rotate: 0 }}
-            style={{ originX: 0.5, originY: 0.5 }}
-          >
-            {/* Definiciones de gradientes */}
-            <defs>
-              {segments.map((segment, index) => (
-                <linearGradient
-                  key={`gradient-${index}`}
-                  id={`gradient-${index}`}
-                  x1="0%"
-                  y1="0%"
-                  x2="100%"
-                  y2="100%"
-                >
-                  <stop offset="0%" stopColor={segment.gradient[0]} />
-                  <stop offset="100%" stopColor={segment.gradient[1]} />
-                </linearGradient>
-              ))}
-              
-              {/* Filtros para sombras y efectos */}
-              <filter id="innerShadow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="2"/>
-                <feOffset dx="1" dy="1" result="offset"/>
-                <feFlood floodColor="#000000" floodOpacity="0.2"/>
-                <feComposite in2="offset" operator="in"/>
-                <feMerge>
-                  <feMergeNode/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-              
-              <filter id="buttonShadow" x="-50%" y="-50%" width="200%" height="200%">
-                <feDropShadow dx="0" dy="4" stdDeviation="6" floodOpacity="0.3"/>
-              </filter>
-            </defs>
-            
-            {/* Círculo exterior de la rueda (borde) */}
-            <circle
-              cx="150"
-              cy="150"
-              r="145"
-              fill="#2C3E50"
-              stroke="#34495E"
-              strokeWidth="3"
+        {/* Glow effect */}
+        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-yellow-400 via-pink-500 to-blue-500 opacity-20 blur-xl scale-110 animate-pulse"></div>
+        
+        {/* Premium Pointer/Arrow */}
+        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-3 z-20">
+          <div className="relative">
+            {/* Arrow shadow */}
+            <div 
+              className="absolute top-1 left-1/2 transform -translate-x-1/2"
+              style={{ 
+                width: 0, 
+                height: 0,
+                borderLeft: '18px solid transparent',
+                borderRight: '18px solid transparent',
+                borderTop: '36px solid rgba(0,0,0,0.3)',
+                filter: 'blur(2px)'
+              }}
             />
-            
-            {/* Segmentos de la rueda */}
-            {segments.map((segment, index) => {
-              const textPos = getTextPosition(index);
-              
-              return (
-                <g key={segment.id}>
-                  {/* Segmento principal */}
-                  <path
-                    d={generateSegmentPath(index, 140)}
-                    fill={`url(#gradient-${index})`}
-                    stroke="#FFFFFF"
-                    strokeWidth="2"
-                    filter="url(#innerShadow)"
-                  />
-                  
-                  {/* Líneas divisorias entre segmentos */}
-                  <path
-                    d={generateSegmentPath(index, 140)}
-                    fill="none"
-                    stroke="#FFFFFF"
-                    strokeWidth="3"
-                    opacity="0.8"
-                  />
-                  
-                  {/* Área para íconos (círculo blanco) */}
-                  <circle
-                    cx={getTextPosition(index, 80).x}
-                    cy={getTextPosition(index, 80).y}
-                    r="16"
-                    fill="#FFFFFF"
-                    opacity="0.9"
-                  />
-                  
-                  {/* Texto del segmento */}
-                  <text
-                    x={textPos.x}
-                    y={textPos.y + 30}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    fill="#FFFFFF"
-                    fontSize="11"
-                    fontWeight="bold"
-                    fontFamily="Arial, sans-serif"
-                    transform={`rotate(${textPos.rotation}, ${textPos.x}, ${textPos.y + 30})`}
-                  >
-                    <tspan x={textPos.x} dy="0">{segment.label.split(' ').slice(0, 2).join(' ')}</tspan>
-                    {segment.label.split(' ').length > 2 && (
-                      <tspan x={textPos.x} dy="12">{segment.label.split(' ').slice(2).join(' ')}</tspan>
-                    )}
-                  </text>
-                </g>
-              );
+            {/* Main arrow */}
+            <div 
+              className="relative"
+              style={{ 
+                width: 0, 
+                height: 0,
+                borderLeft: '16px solid transparent',
+                borderRight: '16px solid transparent',
+                borderTop: '34px solid #FFD700',
+                filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))'
+              }}
             })}
             
             {/* Centro de la rueda */}
