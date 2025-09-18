@@ -1,7 +1,13 @@
 import React, { useState, useRef, useImperativeHandle, forwardRef } from 'react';
 import { motion, useAnimation } from 'framer-motion';
 
-const SpinningWheelPremium = forwardRef(({ categories, onResult, isSpinning: externalIsSpinning }, ref) => {
+interface SpinningWheelPremiumProps {
+  categories: string[];
+  onResult?: (category: string) => void;
+  isSpinning?: boolean;
+}
+
+const SpinningWheelPremium = forwardRef<any, SpinningWheelPremiumProps>(({ categories, onResult, isSpinning: externalIsSpinning }, ref) => {
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const controls = useAnimation();
