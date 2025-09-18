@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+    id        String   @id @default(cuid())
+    nickname  String   @unique
+    highScore Int      @default(0)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Relations
+    scores Score[]
+
+    @@map("users")
+}
+
+model Score {
+    id        String   @id @default(cuid())
+    value     Int
+    gameMode  String   @default("SINGLE") // SINGLE, DUEL
+    createdAt DateTime @default(now())
+
+    // Relations
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@map("scores")
+}
+
+model Question {
+    id        String   @id @default(cuid())
+    category  String
+    text      String
+    options   String   // JSON string of 4 options
+    answer    String
+    isActive  Boolean  @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("questions")
+}
+
+model SubmittedQuestion {
+    id        String   @id @default(cuid())
+    text      String
+    category  String
+    options   String   // JSON string of 4 options
+    answer    String
+    status    String   @default("PENDING") // PENDING, APPROVED, REJECTED
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("submitted_questions")
+}
+
+model GameRoom {
+    id        String   @id @default(cuid())
+    code      String   @unique // 6-digit room code
+    status    String   @default("WAITING") // WAITING, PLAYING, FINISHED
+    maxPlayers Int     @default(2)
+    
+    // Game state
+    currentRound  Int @default(0)
+    maxRounds     Int @default(10)
+    
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    
+    // Relations
+    players GamePlayer[]
+
+    @@map("game_rooms")
+}
+
+model GamePlayer {
+    id       String @id @default(cuid())
+    userId   String
+    score    Int    @default(0)
+    isReady  Boolean @default(false)
+    
+    // Relations
+    roomId String
+    room   GameRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+    
+    createdAt DateTime @default(now())
+
+    @@unique([roomId, userId])
+    @@map("game_players")
+}

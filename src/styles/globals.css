@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Disable text selection on game elements */
+.no-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Touch optimizations */
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+/* Custom button styles */
+@layer components {
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary-400 to-primary-500 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95;
+  }
+  
+  .btn-secondary {
+    @apply bg-gradient-to-r from-secondary-400 to-secondary-500 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95;
+  }
+  
+  .btn-outline {
+    @apply border-2 border-white text-white font-bold py-3 px-6 rounded-full shadow-lg hover:bg-white hover:text-primary-600 transition-all duration-200 transform hover:scale-105 active:scale-95;
+  }
+  
+  .card {
+    @apply bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6;
+  }
+  
+  .card-glass {
+    @apply bg-white/20 backdrop-blur-lg border border-white/30 rounded-2xl shadow-xl;
+  }
+}
+
+/* Animation keyframes */
+@keyframes bounce-gentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(45, 212, 191, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(45, 212, 191, 0.8);
+  }
+}
+
+@keyframes spin-wheel {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Utility classes */
+.animate-bounce-gentle {
+  animation: bounce-gentle 2s infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s infinite;
+}
+
+.animate-spin-wheel {
+  animation: spin-wheel 2s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .btn-primary,
+  .btn-secondary,
+  .btn-outline {
+    @apply py-4 px-8 text-lg min-h-[48px];
+  }
+}
