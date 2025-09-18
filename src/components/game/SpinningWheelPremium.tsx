@@ -11,7 +11,7 @@ const SpinningWheelPremium = forwardRef<any, SpinningWheelPremiumProps>(({ categ
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const controls = useAnimation();
-  const wheelRef = useRef();
+  const wheelRef = useRef<SVGSVGElement>(null);
 
   // Premium colors with gradients
   const segmentColors = [
@@ -49,11 +49,11 @@ const SpinningWheelPremium = forwardRef<any, SpinningWheelPremiumProps>(({ categ
       // Calculate which segment was selected (accounting for pointer at top)
       const normalizedAngle = (360 - (newRotation % 360) + 90) % 360;
       const selectedIndex = Math.floor(normalizedAngle / segmentAngle);
-      const selectedCategory = categories[selectedIndex];
+      const selectedCategory = categories[selectedIndex] || categories[0];
       
       setIsSpinning(false);
       
-      if (onResult) {
+      if (onResult && selectedCategory) {
         onResult(selectedCategory);
       }
       
@@ -61,7 +61,7 @@ const SpinningWheelPremium = forwardRef<any, SpinningWheelPremiumProps>(({ categ
     }
   }));
 
-  const createSegmentPath = (index, total) => {
+  const createSegmentPath = (index: number, total: number) => {
     const angle = 360 / total;
     const startAngle = index * angle - 90; // Start from top
     const endAngle = (index + 1) * angle - 90;
@@ -83,7 +83,7 @@ const SpinningWheelPremium = forwardRef<any, SpinningWheelPremiumProps>(({ categ
     return `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
   };
 
-  const getTextPosition = (index, total) => {
+  const getTextPosition = (index: number, total: number) => {
     const angle = 360 / total;
     const midAngle = (index * angle + angle / 2 - 90) * (Math.PI / 180);
     const textRadius = 100; // Optimal distance for readability
@@ -97,7 +97,7 @@ const SpinningWheelPremium = forwardRef<any, SpinningWheelPremiumProps>(({ categ
   };
 
   // Break long text into multiple lines for better readability
-  const formatCategoryText = (text) => {
+  const formatCategoryText = (text: string) => {
     if (text.length <= 18) return [text];
     
     const words = text.split(' ');
