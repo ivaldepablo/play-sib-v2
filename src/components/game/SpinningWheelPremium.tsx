@@ -189,11 +189,11 @@ const SpinningWheelPremium = forwardRef<any, SpinningWheelPremiumProps>(({ categ
           </div>
         </div>
         
-        {/* Premium Wheel SVG */}
+        {/* Premium Wheel SVG - BIGGER */}
         <motion.svg
           ref={wheelRef}
-          width="320"
-          height="320"
+          width="400"
+          height="400"
           viewBox="0 0 300 300"
           className="relative z-10"
           animate={controls}
@@ -292,10 +292,10 @@ const SpinningWheelPremium = forwardRef<any, SpinningWheelPremiumProps>(({ categ
                   <circle
                     cx={textPos.x}
                     cy={textPos.y}
-                    r="40"
-                    fill="rgba(0,0,0,0.4)"
-                    stroke="rgba(255,255,255,0.3)"
-                    strokeWidth="2"
+                    r="45"
+                    fill="rgba(0,0,0,0.7)"
+                    stroke="rgba(255,255,255,0.5)"
+                    strokeWidth="3"
                   />
                   
                   {/* Category Icon */}
@@ -343,10 +343,10 @@ const SpinningWheelPremium = forwardRef<any, SpinningWheelPremiumProps>(({ categ
                           dominantBaseline="middle"
                           className="font-bold select-none"
                           style={{
-                            fontSize: '11px',
+                            fontSize: '13px',
                             fill: '#FFFFFF',
-                            stroke: '#1A252F',
-                            strokeWidth: '0.8px',
+                            stroke: '#000000',
+                            strokeWidth: '1.5px',
                             fontFamily: '"Comfortaa", "Arial", sans-serif',
                             fontWeight: 'bold'
                           }}
@@ -397,6 +397,57 @@ const SpinningWheelPremium = forwardRef<any, SpinningWheelPremiumProps>(({ categ
             fill="rgba(255,255,255,0.8)"
           />
         </motion.svg>
+        
+        {/* SPIN BUTTON - Clickeable */}
+        <button
+          onClick={async () => {
+            if (!isSpinning && !externalIsSpinning) {
+              setIsSpinning(true);
+              
+              // Generate random spin (4-7 full rotations + random angle)
+              const spins = Math.floor(Math.random() * 4) + 4;
+              const finalAngle = Math.random() * 360;
+              const totalRotation = spins * 360 + finalAngle;
+              const newRotation = rotation + totalRotation;
+              
+              setRotation(newRotation);
+              
+              await controls.start({
+                rotate: newRotation,
+                transition: {
+                  duration: 4.5,
+                  ease: [0.23, 1, 0.32, 1],
+                }
+              });
+              
+              // Calculate selected category
+              const normalizedAngle = (360 - (newRotation % 360) + 90) % 360;
+              const selectedIndex = Math.floor(normalizedAngle / segmentAngle);
+              const selectedCategory = categories[selectedIndex] || categories[0];
+              
+              setIsSpinning(false);
+              
+              if (onResult && selectedCategory) {
+                onResult(selectedCategory);
+              }
+            }
+          }}
+          disabled={isSpinning || externalIsSpinning}
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-30
+                     bg-gradient-to-br from-yellow-400 to-orange-500 
+                     hover:from-yellow-300 hover:to-orange-400
+                     disabled:from-gray-400 disabled:to-gray-500
+                     text-white font-bold text-lg px-6 py-3 rounded-full
+                     shadow-lg hover:shadow-xl transform hover:scale-105 
+                     transition-all duration-200 disabled:cursor-not-allowed
+                     border-4 border-white"
+          style={{
+            fontFamily: '"Comfortaa", sans-serif',
+            textShadow: '2px 2px 4px rgba(0,0,0,0.8)'
+          }}
+        >
+          {(isSpinning || externalIsSpinning) ? '⏳' : 'SPIN'}
+        </button>
       </div>
       
       {/* Premium loading state */}
