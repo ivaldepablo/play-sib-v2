@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import SpinningWheelPremium from './SpinningWheelPremium';
 import { playSound } from '~/utils/sounds';
-import SpinningWheel from "./SpinningWheel";
 
 interface SpinWheelProps {
   categories: string[];
