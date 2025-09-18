@@ -5,9 +5,10 @@ interface ModernSpinWheelProps {
   categories: string[];
   onResult?: (category: string) => void;
   isSpinning?: boolean;
+  onSpinStart?: () => void;
 }
 
-const ModernSpinWheel = forwardRef<any, ModernSpinWheelProps>(({ categories, onResult, isSpinning: externalIsSpinning }, ref) => {
+const ModernSpinWheel = forwardRef<any, ModernSpinWheelProps>(({ categories, onResult, isSpinning: externalIsSpinning, onSpinStart }, ref) => {
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const controls = useAnimation();
@@ -43,7 +44,14 @@ const ModernSpinWheel = forwardRef<any, ModernSpinWheelProps>(({ categories, onR
   }));
 
   const handleSpin = async () => {
+    if (isSpinning || externalIsSpinning) return;
+    
     setIsSpinning(true);
+    
+    // Call onSpinStart callback if provided
+    if (onSpinStart) {
+      onSpinStart();
+    }
     
     // Generate random spin (5-8 full rotations + random angle)
     const spins = Math.floor(Math.random() * 4) + 5;

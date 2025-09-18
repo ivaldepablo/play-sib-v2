@@ -6,13 +6,15 @@ interface GameHUDProps {
   score: number;
   gameTime: string;
   questionTime?: number;
+  onBackToMenu?: () => void;
 }
 
 export const GameHUD: React.FC<GameHUDProps> = ({ 
   nickname, 
   score, 
   gameTime, 
-  questionTime 
+  questionTime,
+  onBackToMenu 
 }) => {
   return (
     <motion.div
@@ -23,6 +25,23 @@ export const GameHUD: React.FC<GameHUDProps> = ({
     >
       <div className="max-w-6xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
+          {/* Back Button */}
+          <div className="flex items-center space-x-4">
+            {onBackToMenu && (
+              <motion.button
+                onClick={onBackToMenu}
+                className="flex items-center space-x-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 
+                          border border-red-500/50 rounded-full transition-all duration-200 
+                          hover:scale-105 active:scale-95"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span className="text-lg">🔙</span>
+                <span className="text-white font-medium text-sm">Вернуться</span>
+              </motion.button>
+            )}
+          </div>
+
           {/* Player Info */}
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-2">

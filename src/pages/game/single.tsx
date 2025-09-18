@@ -40,6 +40,7 @@ const SinglePlayerGame: NextPage = () => {
   const [currentQuestion, setCurrentQuestion] = useState<GameQuestion | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [isSpinning, setIsSpinning] = useState(false);
+  const [showExitConfirmation, setShowExitConfirmation] = useState(false);
 
   // API queries
   const { data: questions, isLoading: questionsLoading } = api.question.getByCategory.useQuery(
@@ -94,16 +95,31 @@ const SinglePlayerGame: NextPage = () => {
   }, [gameState, currentQuestion]);
 
   const handleCategorySelected = useCallback((category: string) => {
-    console.log('Category selected:', category); // Debug log
+    console.log('🎲 Category selected:', category);
+    console.log('🎯 Current isSpinning state:', isSpinning);
+    console.log('🎮 Current gameState:', gameState);
     setSelectedCategory(category);
-    setIsSpinning(false); // Stop spinning immediately when category is selected
+    setIsSpinning(false);
+    console.log('✅ Category and spinning state updated');
+  }, [isSpinning, gameState]);
+
+  const handleSpinStart = useCallback(() => {
+    setIsSpinning(true);
   }, []);
 
   // Get random question when category is selected and questions are loaded
   useEffect(() => {
+    console.log('📝 Questions effect triggered:');
+    console.log('   - questions:', questions?.length || 0, 'loaded');
+    console.log('   - isSpinning:', isSpinning);
+    console.log('   - selectedCategory:', selectedCategory);
+    console.log('   - gameState:', gameState);
+    
     if (questions && questions.length > 0 && !isSpinning && selectedCategory) {
+      console.log('🎯 All conditions met, selecting random question...');
       const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
       if (randomQuestion) {
+        console.log('🎉 Selected question:', randomQuestion.text.substring(0, 50) + '...');
         setCurrentQuestion({
           id: randomQuestion.id,
           category: randomQuestion.category,
@@ -113,9 +129,12 @@ const SinglePlayerGame: NextPage = () => {
         });
         setGameState('question');
         setQuestionTime(20);
+        console.log('✅ Game state set to question');
       }
+    } else {
+      console.log('❌ Conditions not met for showing question');
     }
-  }, [questions, isSpinning, selectedCategory]);
+  }, [questions, isSpinning, selectedCategory, gameState]);
 
   const handleAnswerSelected = useCallback((selectedAnswer: string) => {
     if (!currentQuestion) return;
@@ -157,6 +176,18 @@ const SinglePlayerGame: NextPage = () => {
     setCurrentQuestion(null);
     setSelectedCategory('');
     setGameState('wheel');
+  }, []);
+
+  const handleBackToMenu = useCallback(() => {
+    setShowExitConfirmation(true);
+  }, []);
+
+  const confirmExit = useCallback(() => {
+    router.push('/');
+  }, [router]);
+
+  const cancelExit = useCallback(() => {
+    setShowExitConfirmation(false);
   }, []);
 
   const formatTime = (seconds: number) => {
@@ -207,6 +238,7 @@ const SinglePlayerGame: NextPage = () => {
               score={score}
               gameTime={formatTime(gameTime)}
               questionTime={currentQuestion ? questionTime : undefined}
+              onBackToMenu={handleBackToMenu}
             />
 
             {/* Game Content */}
@@ -223,6 +255,7 @@ const SinglePlayerGame: NextPage = () => {
                     categories={CATEGORIES}
                     onCategorySelected={handleCategorySelected}
                     isSpinning={isSpinning}
+                    onSpinStart={handleSpinStart}
                   />
                 </motion.div>
               ) : currentQuestion ? (
@@ -244,6 +277,60 @@ const SinglePlayerGame: NextPage = () => {
                 <LoadingSpinner size="large" />
               )}
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Exit Confirmation Modal */}
+      <AnimatePresence>
+        {showExitConfirmation && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8 max-w-md w-full"
+            >
+              <div className="text-center">
+                <div className="text-6xl mb-4">⚠️</div>
+                <h3 className="text-2xl font-bold text-white mb-4">
+                  ¿Salir del juego?
+                </h3>
+                <p className="text-white/80 mb-6">
+                  Si sales ahora perderás tu progreso actual. Tu puntuación es <span className="font-bold text-accent-yellow">{score} puntos</span>.
+                </p>
+                
+                <div className="flex space-x-4">
+                  <motion.button
+                    onClick={cancelExit}
+                    className="flex-1 px-6 py-3 bg-gray-500/20 hover:bg-gray-500/30 
+                              border border-gray-500/50 rounded-xl text-white font-bold
+                              transition-all duration-200"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Continuar Jugando
+                  </motion.button>
+                  
+                  <motion.button
+                    onClick={confirmExit}
+                    className="flex-1 px-6 py-3 bg-red-500/20 hover:bg-red-500/30 
+                              border border-red-500/50 rounded-xl text-white font-bold
+                              transition-all duration-200"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Salir al Menú
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

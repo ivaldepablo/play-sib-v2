@@ -7,6 +7,7 @@ interface SpinWheelProps {
   categories: string[];
   onCategorySelected: (category: string) => void;
   isSpinning: boolean;
+  onSpinStart?: () => void;
 }
 
 // Mapeo de categorías rusas a IDs en inglés
@@ -26,7 +27,8 @@ const ID_TO_CATEGORY: Record<string, string> = Object.fromEntries(
 export const SpinWheel: React.FC<SpinWheelProps> = ({ 
   categories, 
   onCategorySelected, 
-  isSpinning 
+  isSpinning,
+  onSpinStart 
 }) => {
   
   const handleSpinComplete = (winningSegment: any) => {
@@ -71,6 +73,7 @@ export const SpinWheel: React.FC<SpinWheelProps> = ({
           categories={categories}
           onResult={onCategorySelected}
           isSpinning={isSpinning}
+          onSpinStart={onSpinStart}
         />
       </motion.div>
 
@@ -95,7 +98,7 @@ export const SpinWheel: React.FC<SpinWheelProps> = ({
             animate={{ opacity: 1 }}
             className="text-white/80 text-lg"
           >
-            Нажмите на кнопку "GIRAR" в центре колеса!
+            Нажмите на кнопку "SPIN" в центре колеса!
           </motion.p>
         )}
       </motion.div>
