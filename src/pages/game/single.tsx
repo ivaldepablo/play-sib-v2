@@ -50,11 +50,32 @@ const SinglePlayerGame: NextPage = () => {
 
   const utils = api.useUtils();
   const submitScoreMutation = api.score.submit.useMutation({
-    onSuccess: () => {
-      // Invalidate leaderboard queries to refetch fresh data
-      utils.leaderboard.getGlobal.invalidate();
-      utils.leaderboard.getWeekly.invalidate();
-      utils.leaderboard.getUserRank.invalidate();
+    onSuccess: async (data) => {
+      console.log('Score submitted successfully:', data);
+      
+      // Wait a moment for database to fully update
+      setTimeout(async () => {
+        // Invalidate and refetch all leaderboard-related queries
+        await Promise.all([
+          utils.leaderboard.getGlobal.invalidate(),
+          utils.leaderboard.getWeekly.invalidate(), 
+          utils.leaderboard.getUserRank.invalidate(),
+          utils.leaderboard.getAroundUser.invalidate(),
+          utils.user.getProfile.invalidate({ userId: userSession?.userId })
+        ]);
+        
+        // Force refetch with fresh data
+        utils.leaderboard.getGlobal.refetch();
+        utils.leaderboard.getWeekly.refetch();
+        if (userSession?.userId) {
+          utils.leaderboard.getUserRank.refetch({ userId: userSession.userId });
+        }
+        
+        console.log('Leaderboard queries invalidated and refetched');
+      }, 500); // Wait 500ms for database update to complete
+    },
+    onError: (error) => {
+      console.error('Error submitting score:', error);
     },
   });
 

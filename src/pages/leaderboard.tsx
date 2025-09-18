@@ -25,23 +25,37 @@ const LeaderboardPage: NextPage = () => {
     setUserSession(session);
   }, [router]);
 
-  // API queries
-  const { data: globalLeaderboard, isLoading: globalLoading } = api.leaderboard.getGlobal.useQuery({ 
+  // API queries with enhanced refresh settings
+  const { data: globalLeaderboard, isLoading: globalLoading, refetch: refetchGlobal } = api.leaderboard.getGlobal.useQuery({ 
     limit: 50 
+  }, {
+    refetchOnWindowFocus: true,
+    staleTime: 0, // Always consider data stale to force updates
   });
 
-  const { data: weeklyLeaderboard, isLoading: weeklyLoading } = api.leaderboard.getWeekly.useQuery({ 
+  const { data: weeklyLeaderboard, isLoading: weeklyLoading, refetch: refetchWeekly } = api.leaderboard.getWeekly.useQuery({ 
     limit: 50 
+  }, {
+    refetchOnWindowFocus: true,
+    staleTime: 0,
   });
 
-  const { data: userRank } = api.leaderboard.getUserRank.useQuery(
+  const { data: userRank, refetch: refetchUserRank } = api.leaderboard.getUserRank.useQuery(
     { userId: userSession?.userId ?? "" },
-    { enabled: !!userSession }
+    { 
+      enabled: !!userSession,
+      refetchOnWindowFocus: true,
+      staleTime: 0,
+    }
   );
 
   const { data: aroundUser } = api.leaderboard.getAroundUser.useQuery(
     { userId: userSession?.userId ?? "", range: 3 },
-    { enabled: !!userSession }
+    { 
+      enabled: !!userSession,
+      refetchOnWindowFocus: true,
+      staleTime: 0,
+    }
   );
 
   if (!userSession) {
@@ -55,6 +69,12 @@ const LeaderboardPage: NextPage = () => {
   const currentData = activeTab === "global" ? globalLeaderboard : weeklyLeaderboard;
   const isLoading = activeTab === "global" ? globalLoading : weeklyLoading;
 
+  const handleRefresh = () => {
+    refetchGlobal();
+    refetchWeekly();
+    refetchUserRank();
+  };
+
   return (
     <div className="min-h-screen p-4">
       <div className="max-w-4xl mx-auto">
@@ -67,9 +87,20 @@ const LeaderboardPage: NextPage = () => {
           <h1 className="text-4xl font-bold font-comfortaa text-white mb-2">
             🏆 Таблица лидеров
           </h1>
-          <p className="text-white/80 text-lg">
+          <p className="text-white/80 text-lg mb-4">
             Лучшие игроки Play Sib v2
           </p>
+          <motion.button
+            onClick={handleRefresh}
+            className="inline-flex items-center space-x-2 px-4 py-2 bg-primary-500/20 hover:bg-primary-500/30 
+                      border border-primary-500/50 rounded-full text-white font-medium text-sm
+                      transition-all duration-200 hover:scale-105"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <span>🔄</span>
+            <span>Обновить</span>
+          </motion.button>
         </motion.div>
 
         {/* User Stats Card */}
