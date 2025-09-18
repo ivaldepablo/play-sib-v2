@@ -94,4 +94,40 @@ export const questionRouter = createTRPCRouter({
         orderBy: { createdAt: "desc" },
       });
     }),
+
+  approveSubmitted: publicProcedure
+    .input(z.object({
+      id: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      // Update the submitted question to approved
+      const submittedQuestion = await ctx.db.submittedQuestion.update({
+        where: { id: input.id },
+        data: { status: "APPROVED" },
+      });
+
+      // Also add it to the main questions table for the game
+      await ctx.db.question.create({
+        data: {
+          category: submittedQuestion.category,
+          text: submittedQuestion.text,
+          options: submittedQuestion.options,
+          answer: submittedQuestion.answer,
+          isActive: true,
+        },
+      });
+
+      return submittedQuestion;
+    }),
+
+  rejectSubmitted: publicProcedure
+    .input(z.object({
+      id: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.submittedQuestion.update({
+        where: { id: input.id },
+        data: { status: "REJECTED" },
+      });
+    }),
 });
